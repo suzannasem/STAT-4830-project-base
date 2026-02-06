@@ -25,7 +25,7 @@ We achieved a PSNR of 22.78 dB and an MSE of 0.00529, although it is unclear how
 Current limitations include that synthetic under-sampling of k-space may not accurately reflect actual undersampling that occurs during quick MRI scans. The accuracy of the reconstruction would change depending on the number of pixels included in the sample. 
 
 Our resource usage measurements can be seen here:
-{}
+![Week 4 Resource Usage Measurements](figures/week4_usage_measurements.png)
 
 We were successful in loading 120 MRI image slices and converting the middle slice to a 256x256 pixel grid. Since we used a single image for our optimization, we were able to simulate ten thousand epochs without large runtime effects. In practice, physicians would typically be combining multiple low-resolution MRI images into a single high-resolution one using these reconstruction methods: using multiple images or even an entire stack would introduce computational constraints as the filesize increases.
 
@@ -33,5 +33,30 @@ We were successful in loading 120 MRI image slices and converting the middle sli
 In terms of next steps, for immediate improvements, we have to focus on decreasing loss to bring the reconstructed image closer to the target. Additionally, we have to tackle filesize constraints as the multiple slices take up a lot of memory. While we used a Gaussian kernel to ensure smoothness across the image, there are other possible kernels we can try. The LaPlace kernel, for example, provides sharper boundaries which may be more helpful in a MRI context, where irregularities can be as small as a few pixels. Imposing a TV (total variation) penalty would also help preserve sharp edges while regularizing.
 
 We may have to consider broadening the scope of the project as well since it is difficult for us to make an accurate benchmark of success, usability, and accuracy of the reconstructed MRI image without the adequate medical background. This may look like broadening to more general image reconstruction and using data where we have a stronger understanding of what is ‘correct’ and better benchmark the progress of our algorithm. To add a baseline for validation, we can implement zero-filled FFT, which fills all missing values with a value of 0. PSNR relative to ground truth is what is implemented currently, but it is hard to interpret whether the reconstruction error is small or large. Comparing this to zero-filled FFT provides a baseline for the PSNR scale to see how much our implementation actually provides as opposed to the trivial reconstruction. 
+
+# Self Critique
+## Strengths
+- Optimizing kernel coefficients rather than pixels constrains ill-conditioned directions
+- Enforcing data to be in k-space aligns with the real-world methods of MRI scanners
+
+## Areas for Improvement
+- We are missing a baseline for PSNR and MSE that makes interpretation meaningless. We need to implement zero-filled FFT on the same image to see how much our method improves reconstruction compared to the trivial solution.
+- We don’t have a regularizer term in our objective function, so high frequency behavior is not penalized.
+- We only tried our method on one image so far, so it is unclear how things will change when the sample size is increased.
+
+## Critical Risks / Assumptions
+We assume the choice of a Gaussian kernel fits assumptions of MRI images (locality and smoothness) without ever validating it. There is a risk it acts as a filter rather than “recovers” missing k-space directions.
+
+## Concrete Next Actions
+- Add regularization term to the objective function. TV is a method that has appeared in multiple papers we have explored, so we will start there.
+- Implement zero-filled FFT on the same images we use our method on to compare PSNR and MSE
+- Fix everything else and vary kernel type to see how reconstruction quality changes
+
+## Resource Needs
+Data is open-source, but validating with actual low-resolution MRI images will require requesting access from fastMRI or another similar database. We haven’t yet hit constraints from the free version of Google Colab, but adding new terms to the objective functional increases that risk.
+
+
+
+
 
 
