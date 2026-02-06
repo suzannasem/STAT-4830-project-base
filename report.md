@@ -18,7 +18,7 @@ We used data from the UPenn-GBM Cancer Imaging Archive, which is open source and
 
 ## Initial Results
 Here is an image of our first reconstruction using what we have so far:
-{}
+![Week 4 Reconstruction](figures/week4_initial_results.png)
 
 We achieved a PSNR of 22.78 dB and an MSE of 0.00529, although it is unclear how “good” these benchmarks are and a baseline is necessary for comparison to see if our method makes improvements. 
 
